@@ -1,0 +1,12 @@
+{
+    "name": "@pistonite/celera",
+    "version": "0.0.1",
+    "exports": {
+        ".": "./src/index.ts",
+    },
+    "lint": {
+        "rules": {
+            "include": ["no-slow-types", "missing-explicit-return-type"],
+        },
+    },
+}

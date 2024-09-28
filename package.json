@@ -1,0 +1,14 @@
+{
+    "name": "celera-workspace",
+    "workspaces": [
+        "celera",
+        "celera-test-app"
+    ],
+    "devDependencies": {
+        "prettier": "^3.3.3"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "endOfLine": "auto"
+    }
+}

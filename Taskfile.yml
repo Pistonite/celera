@@ -1,0 +1,20 @@
+version: '3'
+
+tasks:
+  check:
+    desc: Check the code
+    cmds:
+    - task: prettier
+      vars:
+        PRETTIER_ARGS: --check
+
+  fix:
+    desc: Fix the code
+    cmds:
+    - task: prettier
+      vars:
+        PRETTIER_ARGS: --write
+
+  prettier:
+    cmds:
+    - npx prettier "./**/*.{ts,tsx,mts,json,jsonc,js,jsx,cjs,mjs}" {{.PRETTIER_ARGS}}
