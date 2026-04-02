@@ -1,1 +1,9 @@
 /node_modules
+/dist
+.eslintcache
+.prettierignore
+eslint.config.js
+tsconfig*.json
+/mono-dev
+
+

@@ -1,14 +1,32 @@
 {
-    "name": "celera-workspace",
-    "workspaces": [
-        "celera",
-        "celera-test-app"
-    ],
-    "devDependencies": {
-        "prettier": "^3.3.3"
+    "name": "@pistonite/celera",
+    "version": "0.1.0",
+    "type": "module",
+    "description": "In-house UI framework",
+    "homepage": "https://github.com/Pistonite/celera",
+    "bugs": {
+        "url": "https://github.com/Pistonite/celera/issues"
     },
-    "prettier": {
-        "tabWidth": 4,
-        "endOfLine": "auto"
+    "license": "MIT",
+    "author": "Pistonight <pistonknight@outlook.com>",
+    "files": [
+        "dist/**/*",
+        "src/**/*"
+    ],
+    "exports": "./dist/index.js",
+    "types": "./dist/_dts_/src/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Pistonite/celera.git"
+    },
+    "devDependencies": {
+        "eslint": "^9",
+        "mono-dev": "link:./mono-dev"
+    },
+    "peerDependencies": {
+        "react": "^19"
+    },
+    "dependencies": {
+        "@pistonite/pure": "^0.29.1"
     }
 }
