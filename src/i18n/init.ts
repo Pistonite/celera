@@ -5,6 +5,7 @@ import { convertToSupportedLocaleIn, initLocaleState } from "./state.ts";
 import { syncI18nextToCeleraModule } from "./integration.ts";
 import type { LocaleOptions } from "./types.ts";
 import { createBackend } from "./backend.ts";
+import Strings from "./strings.yaml";
 
 export const CELERA_NAMESPACE = "celerans";
 
@@ -83,6 +84,5 @@ const loadCeleraTranslations = async (
         "zh-TW",
     ] as const;
     const langToLoad = convertToSupportedLocaleIn(language, SupportedLocales) || "en-US";
-    const strings = (await import(`./strings/${langToLoad}.yaml`)).default;
-    return strings;
+    return Strings[langToLoad];
 };

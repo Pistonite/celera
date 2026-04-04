@@ -1,93 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+
+import { log } from "self::util";
 
 // These are random values I picked that felt good
 const MAX_SPEED = 200;
 const ACCELERATION = 6.4;
-
-/**
- * Smooth scrolling implementation
- *
- * (A better beizer curve would probably have better experience,
- * but my little brain can't handle it)
- */
-export const useScroll = (
-    getter: () => number,
-    setter: (scroll: number) => void,
-    getMax: () => number,
-) => {
-    const scrollStartTime = useRef(0);
-    const scrollTarget = useRef(0);
-    const scrollSpeed = useRef(0); // unsigned
-    const isScrolling = useRef(false);
-
-    const scrollTo = (target: number) => {
-        const max = getMax();
-        if (max <= 0) {
-            // the element is not scrollable
-            return;
-        }
-
-        scrollTarget.current = Math.max(0, Math.min(target, max));
-
-        const startTime = performance.now();
-        scrollStartTime.current = startTime;
-        if (isScrolling.current) {
-            return;
-        }
-        isScrolling.current = true;
-        // to ensure oscilation does not happen to cause high CPU usage,
-        // we hard cap the scrolling time to 2 seconds
-        const doScroll = () => {
-            const currentTime = performance.now();
-            const elapsed = currentTime - scrollStartTime.current;
-            if (elapsed > 2000) {
-                console.warn(`[shared-controls] scrolling took too long! (${elapsed}ms)`);
-                setter(scrollTarget.current);
-                scrollSpeed.current = 0;
-                isScrolling.current = false;
-                return;
-            }
-            const current = getter();
-            const currentTarget = scrollTarget.current;
-            let next = current;
-            const currentSpeed = scrollSpeed.current;
-            const currentSpeedPlus = currentSpeed + ACCELERATION;
-            const nTicks = Math.ceil(currentSpeedPlus / ACCELERATION);
-            const slowDownThreshold =
-                nTicks * (currentSpeedPlus - ((nTicks - 1) * ACCELERATION) / 2);
-            const remaining = Math.abs(currentTarget - current);
-            if (remaining <= slowDownThreshold) {
-                // start slowing down
-                scrollSpeed.current = Math.max(ACCELERATION, currentSpeed - ACCELERATION);
-            } else if (
-                remaining > slowDownThreshold + currentSpeedPlus &&
-                currentSpeed < MAX_SPEED
-            ) {
-                scrollSpeed.current = Math.min(MAX_SPEED, currentSpeedPlus);
-            }
-            if (currentTarget > current) {
-                next = Math.min(currentTarget, current + currentSpeed);
-            } else {
-                next = Math.max(currentTarget, current - currentSpeed);
-            }
-            if (Math.abs(currentTarget - next) <= ACCELERATION) {
-                // near target, stop
-                next = currentTarget;
-                scrollSpeed.current = 0;
-                isScrolling.current = false;
-                setter(next);
-                return;
-            }
-            setter(next);
-            // continue scrolling
-            setTimeout(doScroll, 10);
-        };
-        doScroll();
-    };
-    const scrollToMemo = useCallback(scrollTo, [getter, setter, getMax]);
-
-    return { scrollTarget, isScrolling, scrollTo: scrollToMemo };
-};
 
 /**
  * Make it so that by default, mouse wheel scrolls horizontally,
@@ -100,90 +17,187 @@ export const useScroll = (
  * ```
  */
 export const useSwappedWheelScrollDirection = () => {
-    // perf L - we have to preventDefault in the handler,
-    // so the wheel event needs to be non-passive
-    const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
-    const getterH = useCallback(() => {
-        return elementRef?.scrollLeft || 0;
-    }, [elementRef]);
-    const setterH = useCallback(
-        (scroll: number) => {
-            if (!elementRef) {
-                return;
-            }
-            elementRef.scrollLeft = scroll;
-        },
-        [elementRef],
-    );
-    const getMaxH = useCallback(() => {
-        if (!elementRef) {
-            return 0;
+    const [serial, setSerial] = useState(0);
+    const elementRef = useRef<HTMLDivElement | null>(null);
+    const setElementRef = useCallback((node: HTMLDivElement) => {
+        if (elementRef.current !== node) {
+            elementRef.current = node;
+            setSerial(x => x + 1);
         }
-        return elementRef.scrollWidth - elementRef.clientWidth;
-    }, [elementRef]);
-    const getterV = useCallback(() => {
-        return elementRef?.scrollTop || 0;
-    }, [elementRef]);
-    const setterV = useCallback(
-        (scroll: number) => {
-            if (!elementRef) {
-                return;
-            }
-            elementRef.scrollTop = scroll;
-        },
-        [elementRef],
-    );
-    const getMaxV = useCallback(() => {
-        if (!elementRef) {
-            return 0;
-        }
-        return elementRef.scrollHeight - elementRef.clientHeight;
-    }, [elementRef]);
+    }, []);
 
-    const {
-        scrollTarget: scrollTargetH,
-        isScrolling: isScrollingH,
-        scrollTo: scrollToH,
-    } = useScroll(getterH, setterH, getMaxH);
-    const {
-        scrollTarget: scrollTargetV,
-        isScrolling: isScrollingV,
-        scrollTo: scrollToV,
-    } = useScroll(getterV, setterV, getMaxV);
-    const handler = useCallback(
-        (e: WheelEvent) => {
-            e.preventDefault();
-            if (!e.deltaY || !elementRef) {
-                return;
-            }
-            let current;
-            const vertical = e.shiftKey;
-            if (vertical) {
-                current = isScrollingV.current ? scrollTargetV.current : elementRef.scrollTop;
-            } else {
-                current = isScrollingH.current ? scrollTargetH.current : elementRef.scrollLeft;
-            }
-            (vertical ? scrollToV : scrollToH)(current + e.deltaY);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [elementRef],
-    );
+    const scrollStartTimeH = useRef(0);
+    const scrollTargetH = useRef(0);
+    const scrollSpeedH = useRef(0);
+    const isScrollingH = useRef(false);
+    const scrollStartTimeV = useRef(0);
+    const scrollTargetV = useRef(0);
+    const scrollSpeedV = useRef(0);
+    const isScrollingV = useRef(false);
+
+    const scrollToH = useCallback((target: number) => {
+        if (!elementRef.current) {
+            return;
+        }
+        executeScroll(elementRef.current, false /* isVertical */,
+            target,
+            scrollStartTimeH,
+            scrollTargetH,
+            scrollSpeedH,
+            isScrollingH,
+        );
+    }, []);
+    const scrollToV = useCallback((target: number) => {
+        if (!elementRef.current) {
+            return;
+        }
+        executeScroll(elementRef.current, true /* isVertical */,
+            target,
+            scrollStartTimeV,
+            scrollTargetV,
+            scrollSpeedV,
+            isScrollingV,
+        );
+    }, []);
 
     useEffect(() => {
-        if (!elementRef) {
+        if (!elementRef.current) {
             return;
         }
         const controller = new AbortController();
-        elementRef.addEventListener("wheel", handler, {
+        elementRef.current.addEventListener("wheel", (e: WheelEvent) => {
+            // perf L - we have to preventDefault in the handler,
+            // so the wheel event needs to be non-passive
+            e.preventDefault();
+            if (!e.deltaY || !elementRef.current) {
+                return;
+            }
+            const vertical = e.shiftKey;
+            if (vertical) {
+                const current = isScrollingV.current ? scrollTargetV.current : elementRef.current.scrollTop;
+                const nextTarget = current + e.deltaY;
+                executeScroll(elementRef.current, true /* isVertical */,
+                    nextTarget,
+                    scrollStartTimeV,
+                    scrollTargetV,
+                    scrollSpeedV,
+                    isScrollingV,
+                );
+            } else {
+                const current = isScrollingH.current ? scrollTargetH.current : elementRef.current.scrollLeft;
+                const nextTarget = current + e.deltaY;
+                executeScroll(elementRef.current, false /* isVertical */,
+                    nextTarget,
+                    scrollStartTimeH,
+                    scrollTargetH,
+                    scrollSpeedH,
+                    isScrollingH,
+                );
+            }
+        }, {
             signal: controller.signal,
             passive: false,
         });
         return () => {
             controller.abort();
         };
-        // handler depends on elementRef so just that is enough
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [elementRef]);
+    }, [serial]);
 
     return { ref: setElementRef, scrollToH, scrollToV };
 };
+
+const executeScroll = (
+    element: HTMLDivElement,
+    isVertical: boolean,
+    nextScrollTarget: number,
+    scrollStartTime: RefObject<number>,
+    scrollTarget: RefObject<number>,
+    scrollSpeed: RefObject<number>,
+    isScrolling: RefObject<boolean>,
+) => {
+    const max = isVertical ? 
+        (element.scrollHeight - element.clientHeight)
+        : (
+        element.scrollWidth - element.clientWidth
+        );
+    if (max <= 0) {
+            // the element is not scrollable
+        return;
+    }
+
+    scrollTarget.current = Math.max(0, Math.min(nextScrollTarget, max));
+    const startTime = performance.now();
+    scrollStartTime.current = startTime;
+    if (isScrolling.current) {
+        return;
+    }
+    isScrolling.current = true;
+        const scrollStep = () => {
+        const current = isVertical ?
+        element.scrollTop
+        :
+        element.scrollLeft;
+        
+
+            const [next, nextSpeed, nextIsScrolling] = computeScroll(
+                current,
+                scrollStartTime.current,
+                scrollTarget.current,
+                scrollSpeed.current,
+            );
+            if (next) {
+                if (isVertical) {
+                element.scrollTop = next;
+            } else {
+                element.scrollLeft = next;
+            }
+            }
+            scrollSpeed.current = nextSpeed;
+            if (!nextIsScrolling) {
+                isScrolling.current = false;
+                return;
+            }
+            // continue scrolling
+            setTimeout(scrollStep, 10);
+        };
+        scrollStep();
+}
+
+const computeScroll = (
+    currentValue: number,
+    currentScrollStartTime: number,
+    currentTarget: number,
+    currentSpeed: number,
+): [number | undefined /* nextValue */, number/* nextSpeed */, boolean /* nextIsScrolling */] => {
+    const currentTime = performance.now();
+    const elapsed = currentTime - currentScrollStartTime;
+    // to ensure oscilation does not happen to cause high CPU usage,
+    // we hard cap the scrolling time to 2 seconds
+    if (elapsed > 2000) {
+        log.warn(`scrolling took too long! (${elapsed}ms)`);
+        return [currentTarget, 0, false /* done */];
+    }
+    let next = currentValue;
+    let nextSpeed = currentSpeed;
+    const currentSpeedPlus = currentSpeed + ACCELERATION;
+    const nTicks = Math.ceil(currentSpeedPlus / ACCELERATION);
+    const slowDownThreshold = nTicks * (currentSpeedPlus - ((nTicks - 1) * ACCELERATION) / 2);
+    const remaining = Math.abs(currentTarget - currentValue);
+    if (remaining <= slowDownThreshold) {
+        // start slowing down
+        nextSpeed = Math.max(ACCELERATION, currentSpeed - ACCELERATION);
+    } else if (remaining > slowDownThreshold + currentSpeedPlus &&
+        currentSpeed < MAX_SPEED) {
+        nextSpeed = Math.min(MAX_SPEED, currentSpeedPlus);
+    }
+    if (currentTarget > currentValue) {
+        next = Math.min(currentTarget, currentValue + currentSpeed);
+    } else {
+        next = Math.max(currentTarget, currentValue - currentSpeed);
+    }
+    if (Math.abs(currentTarget - next) <= ACCELERATION) {
+        // near target, stop
+        return [currentTarget, 0, false /* done */];
+    }
+    return [next, nextSpeed, true];
+}
