@@ -19,7 +19,7 @@ tasks:
     - task: ecma:lib-build
 
   doc:
-    - task: ecma:doc
+    - task: ecma:doc-build
   dev-doc:
     - task: ecma:doc-dev
 

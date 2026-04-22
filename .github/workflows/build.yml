@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Check & Test & Build
+    name: Check & Build
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: Pistonight/mono-dev/actions/setup@main
