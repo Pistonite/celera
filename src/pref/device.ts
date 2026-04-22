@@ -62,7 +62,7 @@ export interface DisplayModeOptions<T extends string> {
      * and if the device is mobile
      */
     detect: (width: number, height: number, isMobile: boolean) => T;
-};
+}
 
 /**
  * Initialize display mode detection for the app.

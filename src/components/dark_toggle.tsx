@@ -2,8 +2,7 @@ import { Button, Tooltip } from "@fluentui/react-components";
 import { WeatherMoon20Regular, WeatherSunny20Regular } from "@fluentui/react-icons";
 
 import { useDark, setDark } from "self::pref";
-import { CELERA_NAMESPACE, useTranslation }
-from "self::i18n";
+import { CELERA_NAMESPACE, useTranslation } from "self::i18n";
 
 import { MenuSwitch } from "./menu_switch.tsx";
 
@@ -18,7 +17,7 @@ export interface DarkToggleProps {
      * as a menu item.
      */
     as?: "button" | "submenu";
-};
+}
 
 /**
  * React component to toggle the dark mode. See {@link DarkToggleProps}

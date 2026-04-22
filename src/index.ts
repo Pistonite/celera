@@ -1,4 +1,3 @@
-
 export {
     DarkToggle,
     GitHubLink,
@@ -12,9 +11,7 @@ export {
     type ResizeLayoutProps,
     type ResizeLayoutOwnProps,
 } from "self::components";
-export {
-    useSwappedWheelScrollDirection
-} from "self::hooks";
+export { useSwappedWheelScrollDirection } from "self::hooks";
 
 export {
     useLocale,
@@ -30,11 +27,12 @@ export {
     getPreferredLocale,
     getLocalizedLanguageName,
     i18next,
-    useTranslation, translate,
+    useTranslation,
+    translate,
     initLocale,
     type LocaleOptions,
     type LoadLanguageFn,
-    type TranslatorFn
+    type TranslatorFn,
 } from "self::i18n";
 
 export {
@@ -47,18 +45,15 @@ export {
     addDarkSubscriber,
     type ColorScheme,
     type DarkOptions,
-
     isMobile,
     useDisplayMode,
     initDisplayMode,
     addDisplayModeSubscriber,
     getDisplayMode,
-    type DisplayModeOptions
+    type DisplayModeOptions,
 } from "self::pref";
 
-export {
-    gale, GALE_BUILTIN_STYLES, injectStyle, ThemeProvider
-} from "self::style";
+export { gale, GALE_BUILTIN_STYLES, injectStyle, ThemeProvider } from "self::style";
 
 import { log } from "self::util";
 export { log as celeraLogger };

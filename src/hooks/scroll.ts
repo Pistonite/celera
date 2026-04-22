@@ -22,7 +22,7 @@ export const useSwappedWheelScrollDirection = () => {
     const setElementRef = useCallback((node: HTMLDivElement) => {
         if (elementRef.current !== node) {
             elementRef.current = node;
-            setSerial(x => x + 1);
+            setSerial((x) => x + 1);
         }
     }, []);
 
@@ -39,7 +39,9 @@ export const useSwappedWheelScrollDirection = () => {
         if (!elementRef.current) {
             return;
         }
-        executeScroll(elementRef.current, false /* isVertical */,
+        executeScroll(
+            elementRef.current,
+            false /* isVertical */,
             target,
             scrollStartTimeH,
             scrollTargetH,
@@ -51,7 +53,9 @@ export const useSwappedWheelScrollDirection = () => {
         if (!elementRef.current) {
             return;
         }
-        executeScroll(elementRef.current, true /* isVertical */,
+        executeScroll(
+            elementRef.current,
+            true /* isVertical */,
             target,
             scrollStartTimeV,
             scrollTargetV,
@@ -65,39 +69,51 @@ export const useSwappedWheelScrollDirection = () => {
             return;
         }
         const controller = new AbortController();
-        elementRef.current.addEventListener("wheel", (e: WheelEvent) => {
-            // perf L - we have to preventDefault in the handler,
-            // so the wheel event needs to be non-passive
-            e.preventDefault();
-            if (!e.deltaY || !elementRef.current) {
-                return;
-            }
-            const vertical = e.shiftKey;
-            if (vertical) {
-                const current = isScrollingV.current ? scrollTargetV.current : elementRef.current.scrollTop;
-                const nextTarget = current + e.deltaY;
-                executeScroll(elementRef.current, true /* isVertical */,
-                    nextTarget,
-                    scrollStartTimeV,
-                    scrollTargetV,
-                    scrollSpeedV,
-                    isScrollingV,
-                );
-            } else {
-                const current = isScrollingH.current ? scrollTargetH.current : elementRef.current.scrollLeft;
-                const nextTarget = current + e.deltaY;
-                executeScroll(elementRef.current, false /* isVertical */,
-                    nextTarget,
-                    scrollStartTimeH,
-                    scrollTargetH,
-                    scrollSpeedH,
-                    isScrollingH,
-                );
-            }
-        }, {
-            signal: controller.signal,
-            passive: false,
-        });
+        elementRef.current.addEventListener(
+            "wheel",
+            (e: WheelEvent) => {
+                // perf L - we have to preventDefault in the handler,
+                // so the wheel event needs to be non-passive
+                e.preventDefault();
+                if (!e.deltaY || !elementRef.current) {
+                    return;
+                }
+                const vertical = e.shiftKey;
+                if (vertical) {
+                    const current = isScrollingV.current
+                        ? scrollTargetV.current
+                        : elementRef.current.scrollTop;
+                    const nextTarget = current + e.deltaY;
+                    executeScroll(
+                        elementRef.current,
+                        true /* isVertical */,
+                        nextTarget,
+                        scrollStartTimeV,
+                        scrollTargetV,
+                        scrollSpeedV,
+                        isScrollingV,
+                    );
+                } else {
+                    const current = isScrollingH.current
+                        ? scrollTargetH.current
+                        : elementRef.current.scrollLeft;
+                    const nextTarget = current + e.deltaY;
+                    executeScroll(
+                        elementRef.current,
+                        false /* isVertical */,
+                        nextTarget,
+                        scrollStartTimeH,
+                        scrollTargetH,
+                        scrollSpeedH,
+                        isScrollingH,
+                    );
+                }
+            },
+            {
+                signal: controller.signal,
+                passive: false,
+            },
+        );
         return () => {
             controller.abort();
         };
@@ -115,13 +131,11 @@ const executeScroll = (
     scrollSpeed: RefObject<number>,
     isScrolling: RefObject<boolean>,
 ) => {
-    const max = isVertical ? 
-        (element.scrollHeight - element.clientHeight)
-        : (
-        element.scrollWidth - element.clientWidth
-        );
+    const max = isVertical
+        ? element.scrollHeight - element.clientHeight
+        : element.scrollWidth - element.clientWidth;
     if (max <= 0) {
-            // the element is not scrollable
+        // the element is not scrollable
         return;
     }
 
@@ -132,43 +146,39 @@ const executeScroll = (
         return;
     }
     isScrolling.current = true;
-        const scrollStep = () => {
-        const current = isVertical ?
-        element.scrollTop
-        :
-        element.scrollLeft;
-        
+    const scrollStep = () => {
+        const current = isVertical ? element.scrollTop : element.scrollLeft;
 
-            const [next, nextSpeed, nextIsScrolling] = computeScroll(
-                current,
-                scrollStartTime.current,
-                scrollTarget.current,
-                scrollSpeed.current,
-            );
-            if (next) {
-                if (isVertical) {
+        const [next, nextSpeed, nextIsScrolling] = computeScroll(
+            current,
+            scrollStartTime.current,
+            scrollTarget.current,
+            scrollSpeed.current,
+        );
+        if (next) {
+            if (isVertical) {
                 element.scrollTop = next;
             } else {
                 element.scrollLeft = next;
             }
-            }
-            scrollSpeed.current = nextSpeed;
-            if (!nextIsScrolling) {
-                isScrolling.current = false;
-                return;
-            }
-            // continue scrolling
-            setTimeout(scrollStep, 10);
-        };
-        scrollStep();
-}
+        }
+        scrollSpeed.current = nextSpeed;
+        if (!nextIsScrolling) {
+            isScrolling.current = false;
+            return;
+        }
+        // continue scrolling
+        setTimeout(scrollStep, 10);
+    };
+    scrollStep();
+};
 
 const computeScroll = (
     currentValue: number,
     currentScrollStartTime: number,
     currentTarget: number,
     currentSpeed: number,
-): [number | undefined /* nextValue */, number/* nextSpeed */, boolean /* nextIsScrolling */] => {
+): [number | undefined /* nextValue */, number /* nextSpeed */, boolean /* nextIsScrolling */] => {
     const currentTime = performance.now();
     const elapsed = currentTime - currentScrollStartTime;
     // to ensure oscilation does not happen to cause high CPU usage,
@@ -186,8 +196,7 @@ const computeScroll = (
     if (remaining <= slowDownThreshold) {
         // start slowing down
         nextSpeed = Math.max(ACCELERATION, currentSpeed - ACCELERATION);
-    } else if (remaining > slowDownThreshold + currentSpeedPlus &&
-        currentSpeed < MAX_SPEED) {
+    } else if (remaining > slowDownThreshold + currentSpeedPlus && currentSpeed < MAX_SPEED) {
         nextSpeed = Math.min(MAX_SPEED, currentSpeedPlus);
     }
     if (currentTarget > currentValue) {
@@ -200,4 +209,4 @@ const computeScroll = (
         return [currentTarget, 0, false /* done */];
     }
     return [next, nextSpeed, true];
-}
+};

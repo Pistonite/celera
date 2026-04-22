@@ -35,7 +35,8 @@ export interface ResizeLayoutOwnProps {
 /**
  * See {@link ResizeLayoutOwnProps}
  */
-export type ResizeLayoutProps = ResizeLayoutOwnProps & Omit<React.HTMLAttributes<HTMLDivElement>, "ref" | "onMouseUp" | "onMouseLeave">;
+export type ResizeLayoutProps = ResizeLayoutOwnProps &
+    Omit<React.HTMLAttributes<HTMLDivElement>, "ref" | "onMouseUp" | "onMouseLeave">;
 
 const useStyles = makeStyles({
     container: { display: "flex" },
@@ -80,16 +81,16 @@ const useStyles = makeStyles({
  */
 export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inProps) => {
     const {
-    vertical,
-    valuePercent,
-    setValuePercent,
-    disabled,
-    naturalSize,
-    minWidth,
-    minHeight,
-    touch,
-    children,
-    ...props
+        vertical,
+        valuePercent,
+        setValuePercent,
+        disabled,
+        naturalSize,
+        minWidth,
+        minHeight,
+        touch,
+        children,
+        ...props
     } = inProps;
     const [firstChild, secondChild] = Children.toArray(children);
 

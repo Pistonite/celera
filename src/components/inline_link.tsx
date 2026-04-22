@@ -13,7 +13,7 @@ const useStyles = makeStyles({
  * @class
  */
 export const InlineLink: React.FC<LinkProps> = (props) => {
-    const { children, ...rest }  =props;
+    const { children, ...rest } = props;
     const styles = useStyles();
     return (
         <span className={styles.container}>

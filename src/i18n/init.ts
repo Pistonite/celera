@@ -14,9 +14,7 @@ export const CELERA_NAMESPACE = "celerans";
  *
  * This function calls `initLocale` internally, so you don't need to do that yourself.
  */
-export const initLocale = async <TLocale extends string>(
-    options: LocaleOptions<TLocale>,
-) => {
+export const initLocale = async <TLocale extends string>(options: LocaleOptions<TLocale>) => {
     const defaultLocale = options.default;
     let instance = i18next;
     const syncMode = options.sync || "full";
@@ -46,19 +44,25 @@ export const initLocale = async <TLocale extends string>(
 
     const loader = options.loader;
     if (typeof loader === "function") {
-        const backend = createBackend({
+        const backend = createBackend(
+            {
                 translation: loader,
-                [CELERA_NAMESPACE]: loadCeleraTranslations
-            }, defaultLocale);
+                [CELERA_NAMESPACE]: loadCeleraTranslations,
+            },
+            defaultLocale,
+        );
         instance = instance.use(backend);
         await instance.init();
         return;
     }
 
-    const backend = createBackend({
-        ...loader,
-        [CELERA_NAMESPACE]: loadCeleraTranslations
-    }, defaultLocale);
+    const backend = createBackend(
+        {
+            ...loader,
+            [CELERA_NAMESPACE]: loadCeleraTranslations,
+        },
+        defaultLocale,
+    );
     instance = instance.use(backend);
     await instance.init({
         // make sure the namespaces are registered, so translations work
@@ -67,9 +71,7 @@ export const initLocale = async <TLocale extends string>(
     });
 };
 
-const loadCeleraTranslations = async (
-    language: string,
-): Promise<Record<string, string>> => {
+const loadCeleraTranslations = async (language: string): Promise<Record<string, string>> => {
     const SupportedLocales = [
         "de-DE",
         "en-US",

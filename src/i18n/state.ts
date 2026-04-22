@@ -215,6 +215,5 @@ export const addLocaleSubscriber = (
     return locale.subscribe(fn, notifyImmediately);
 };
 
-
 /** Get the array of supported locales passed to init */
 export const getSupportedLocales = (): readonly string[] => supportedLocales;

@@ -47,7 +47,7 @@ export interface DarkOptions {
      * Defaults to `:root`. If set to empty string, CSS will not be updated
      */
     selector?: string;
-};
+}
 
 /**
  * Initialize the dark mode global state

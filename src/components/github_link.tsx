@@ -21,7 +21,7 @@ export interface GitHubLinkProps {
      * as a menu item.
      */
     as?: "button" | "submenu";
-};
+}
 
 /**
  * React component. Button with GitHub icon that links to the GitHub repository.

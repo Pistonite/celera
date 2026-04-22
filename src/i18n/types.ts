@@ -1,4 +1,3 @@
-
 /**
  * Type alias for a function that loads language files
  *
@@ -71,9 +70,9 @@ export interface LocaleOptions<TLocale extends string> {
      * Otherwise, you can provide a record of functions for each namespace.
      */
     loader: LoadLanguageFn | Record<string, LoadLanguageFn>;
-};
+}
 
-/** 
+/**
  * i18next translator function
  *
  * The options contain variables to be interpolated into the translation

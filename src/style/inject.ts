@@ -19,4 +19,4 @@ export const injectStyle = (id: string, style: string): void => {
             e.innerText = style;
         }
     }
-}
+};

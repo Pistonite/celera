@@ -17,7 +17,7 @@ export const useTranslation = (namespace?: string): TranslatorFn => {
 
 /** The i18next instance */
 export const i18next = i18next_;
-/** 
+/**
  * The i18next.t translation function
  * @function
  */
