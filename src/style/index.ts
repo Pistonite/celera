@@ -1,3 +1,3 @@
-export { gale } from "./gale.ts";
-export { injectStyle } from "./inject.ts";
-export { ThemeProvider } from "./theme_provider.tsx";
+export * from "./gale.ts";
+export * from "./inject.ts";
+export * from "./theme_provider.tsx";

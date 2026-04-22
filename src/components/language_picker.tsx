@@ -9,18 +9,26 @@ import {
     Tooltip,
 } from "@fluentui/react-components";
 import { Globe20Regular } from "@fluentui/react-icons";
-import { CELERA_NAMESPACE, getLocalizedLanguageName, getSupportedLocales, setLocale, useLocale, useTranslation }
-from "self::i18n";
+import {
+    CELERA_NAMESPACE,
+    getLocalizedLanguageName,
+    getSupportedLocales,
+    setLocale,
+    useLocale,
+    useTranslation,
+} from "self::i18n";
 
 import type { CommonProps } from "self::util";
 
 /**
- * Pick the language for Pure locale system
+ * React component for a language picker button or menu
+ *
+ * @class
  */
 export const LanguagePicker: React.FC<CommonProps> = (props) => {
     const { as = "button" } = props;
     const locale = useLocale();
-    const { t } = useTranslation(CELERA_NAMESPACE);
+    const t = useTranslation(CELERA_NAMESPACE);
     return (
         <Menu
             checkedValues={{ locale: [locale] }}

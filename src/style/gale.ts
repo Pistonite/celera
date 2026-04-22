@@ -1,73 +1,197 @@
-import { makeStyles, mergeClasses } from "@fluentui/react-components";
+import { type GriffelStyle, makeStyles, mergeClasses } from "@fluentui/react-components";
 
 import { log } from "self::util";
 
-// experimental, tailwind-like thing, but uses griffel
-// the benefit with griffel is we don't get duplicate CSS rules
-// from griffel and tailwind, and LTR/RTL works (which is one of the
-// main reasons we use griffel in the first place)
-//
-// The idea is to have a set of utility classes that are
-// defined globally (useSharedStyles hook), and make
-// a merge function that uses template literal to merge
-// shared and local styles
-//
-// // declare this somewhere
-// const useStyleEngine = gale({ ... });
-//
-// // in your components
-// const m = useStyleEngine();
-// const c = useStyles() // local styles;
-//
-//
-// so: className={m("full-wh",c.custom,...)}
-// equals to: className={mergeClasses(sharedStyles["full-wh"], c.custom, ...)}
-const makeGaleHook = <T extends string>(innerHook: () => Record<T, string>): (() => GaleFn) => {
-    const classNamesObjCache = new Map<Record<string, string>, Map<string, string[]>>();
-
-    return () => {
-        // -- hook scope --
-        const classnames = innerHook();
-        let cached = classNamesObjCache.get(classnames);
-        if (!cached) {
-            cached = new Map();
-            classNamesObjCache.set(classnames, cached);
+/**
+ * Tailwind-like style engine, but uses `griffel`
+ *
+ * the benefit with griffel is we don't get duplicate CSS rules
+ * from griffel and tailwind, and LTR/RTL works (which is one of the
+ * main reasons we use griffel in the first place).
+ *
+ * There are 3 places to define styles in this architecture:
+ * - Built-in style names - see {@link GALE_BUILTIN_STYLES}
+ * - Project-level styles defined with `gale` function. For example:
+ *     ```typescript
+ *     import { gale } from "@pistonite/celera";
+ *
+ *     export const useStyleEngine = gale({
+ *         "pad-s": {
+ *             padding: 8
+ *         }
+ *     });
+ *     ```
+ *     These will be merged with the built-in styles (and could override them)
+ * - Lastly, component-level styles defined with `useStyleEngine` exported from above.
+ *   This is similar to `makeStyles` from `griffel`.
+ *     ```typescript
+ *     import { useStyleEngine } from "./path/to/my_style.ts";
+ *
+ *     const useStyles = useStyleEngine.extend({
+ *         "my-container": {
+ *             width: 500
+ *         }
+ *     });
+ *     ```
+ *
+ * To use the style engine in a component, either invoke the project-level hook `useStyleEngine()`,
+ * or the component-level hook `useStyles()`. **The style string passed to `m` is type-checked by TypeScript**
+ * to be a space-separated list of style classes.
+ *
+ * ```typescript
+ * import { makeStyles } from "@fluentui/react-components";
+ *
+ * export const MyComponent = () => {
+ *     const m = useStyleEngine(); // project-level style idents
+ *     return <div className={m("wh-100 padding-0")}>my component</div>;
+ * };
+ *
+ * export const MyComponent2 = () => {
+ *     const m = useStyles(); // component-level style idents
+ *     return <div className={m("h-100 my-container")}>my component</div>;
+ * };
+ *
+ * const useExtraStyles = makeStyles({
+ *     extra: {
+ *         overflow: "hidden"
+ *     }
+ * });
+ *
+ * export const MyComponent3 = () => {
+ *     const m = useStyles(); // component-level style idents
+ *     // if needed (should be rare), you can interop with hooks from griffel
+ *     const c = useExtraStyles();
+ *     return <div className={m("h-100 my-container", c.extra)}>my component</div>;
+ * };
+ * ```
+ *
+ */
+export const gale = <T extends string>(
+    projectStyles: Record<T, GriffelStyle>,
+): GaleEngine<GaleKeys<T>> => {
+    // projectStyles -> componentStyles -> names
+    const cache = new Map<
+        Record<GaleKeys<T>, string>,
+        Map<Record<string, string>, Map<string, string>>
+    >();
+    const useProjectLevelGriffelStyles = makeStyles({
+        ...GALE_BUILTIN_STYLES,
+        ...projectStyles,
+    });
+    const STUB_COMPONENT_STYLES_KEY = {}; // stable reference
+    // this is the implementation when components call useStyleEngine or useStyles
+    const useStyleEngine = (): GaleFn<GaleKeys<T>> => {
+        // griffel makeStyles hook return cached stable reference
+        const projectStyles = useProjectLevelGriffelStyles();
+        let componentStylesToGaleStringCache = cache.get(projectStyles);
+        if (!componentStylesToGaleStringCache) {
+            const c = new Map();
+            cache.set(projectStyles, c);
+            componentStylesToGaleStringCache = c;
         }
-        const c = cached;
-
-        return (sharedStylesString, values) => {
-            let parsed = c.get(sharedStylesString);
-            if (!parsed) {
-                parsed = [];
-                const parts = sharedStylesString.split(" ");
-                for (const p of parts) {
-                    const slotName = p.trim();
-                    if (!slotName) {
-                        continue;
-                    }
-                    if (!(slotName in classnames)) {
-                        log.error(`${slotName} not found in shared styles`);
-                        continue;
-                    }
-                    parsed.push(classnames[slotName as T]);
-                }
-                c.set(sharedStylesString, parsed);
-            }
-
-            if (Array.isArray(values)) {
-                return mergeClasses(...parsed, ...values);
-            }
-            return mergeClasses(...parsed, values);
+        let galeStringCache = componentStylesToGaleStringCache.get(STUB_COMPONENT_STYLES_KEY);
+        if (!galeStringCache) {
+            const c = new Map();
+            componentStylesToGaleStringCache.set(STUB_COMPONENT_STYLES_KEY, c);
+            galeStringCache = c;
+        }
+        const mFunction = (classes: string): string => {
+            return computeClassesWithCache(
+                projectStyles,
+                STUB_COMPONENT_STYLES_KEY,
+                galeStringCache,
+                classes,
+            );
         };
+        return mFunction as GaleFn<GaleKeys<T>>;
     };
+    const makeComponentLevelStyleEngine = <K extends string>(
+        componentStyles: Record<K, GriffelStyle>,
+    ): GaleHook<K | GaleKeys<T>> => {
+        const useComponentStyles = makeStyles(componentStyles);
+        const useStyles = (): GaleFn<K | GaleKeys<T>> => {
+            // griffel makeStyles hook return cached stable reference
+            const projectStyles = useProjectLevelGriffelStyles();
+            let componentStylesToGaleStringCache = cache.get(projectStyles);
+            if (!componentStylesToGaleStringCache) {
+                const c = new Map();
+                cache.set(projectStyles, c);
+                componentStylesToGaleStringCache = c;
+            }
+            const componentStyles = useComponentStyles();
+            let galeStringCache = componentStylesToGaleStringCache.get(componentStyles);
+            if (!galeStringCache) {
+                const c = new Map();
+                componentStylesToGaleStringCache.set(componentStyles, c);
+                galeStringCache = c;
+            }
+            const mFunction = (classes: string): string => {
+                return computeClassesWithCache(
+                    projectStyles,
+                    componentStyles,
+                    galeStringCache,
+                    classes,
+                );
+            };
+            return mFunction as GaleFn<K | GaleKeys<T>>;
+        };
+        return useStyles;
+    };
+    const computeClassesWithCache = (
+        projectStyles: Record<string, string>,
+        componentStyles: Record<string, string>,
+        cache: Map<string, string>,
+        classes: string,
+    ): string => {
+        const cached = cache.get(classes);
+        if (cached !== undefined) {
+            return cached;
+        }
+        const parsed: string[] = [];
+        for (const p of classes.split(" ")) {
+            const slotName = p.trim();
+            if (!slotName) {
+                continue;
+            }
+            // try component style first, fallback to project style
+            const className: string | undefined =
+                componentStyles[slotName] || projectStyles[slotName];
+            if (!className) {
+                log.error(`${slotName} not found in project or component styles`);
+                continue;
+            }
+        }
+
+        const result = mergeClasses(...parsed);
+        cache.set(classes, result);
+        return result;
+    };
+
+    return Object.assign(useStyleEngine, { extend: makeComponentLevelStyleEngine });
 };
 
-type GaleFn = (
-    sharedStylesString: string,
-    values?: string | false | undefined | (string | false | undefined)[],
-) => string;
+type GaleKeys<T extends string> = T | GaleBuiltinKey;
+interface GaleEngine<T extends string> extends GaleHook<T> {
+    extend: <K extends string>(componentStyles: Record<K, GriffelStyle>) => GaleHook<K | T>;
+}
+type GaleHook<T extends string> = () => GaleFn<T>;
+type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T>) => string;
 
-const Builtin = {
+type GaleString<K extends string, T extends string> = K extends T
+    ? K
+    : K extends `${infer U} ${infer N}`
+      ? U extends T
+          ? GaleString<N, T> extends N
+              ? `${U} ${GaleString<N, T>}`
+              : Prettify<GaleString<N, T> & { After: U }>
+          : { InvalidStyleIdent: U }
+      : { InvalidStyleIdent: K };
+type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
+
+/** Built-in styles for {@link gale} */
+export const GALE_BUILTIN_STYLES = {
     "wh-100v": {
         width: "100vw",
         height: "100vh",
@@ -178,8 +302,17 @@ const Builtin = {
     "padding-0": {
         padding: 0,
     },
-} as const;
+} as const satisfies Record<string, GriffelStyle>;
 
-export const gale = <T>(customStyles: T) => {
-    return makeGaleHook(makeStyles({ ...Builtin, ...customStyles }));
-};
+type GaleBuiltinKey = keyof typeof GALE_BUILTIN_STYLES;
+// // type A = Validate<"margin-0", Keys>;
+// // type B = Validate<"foo", Keys>;
+// // type C = Validate<"foo bar", Keys>;
+// // type D = Validate<"margin-0 padding-0", Keys>;
+// // type E = Validate<"margin-0 0", Keys>;
+// // type F = Validate<"0 padding-0", Keys>;
+//
+// const testFunc = <T extends string>(exp: Validate<T, Keys>): void => {
+// }
+//
+// testFunc("margin-0");

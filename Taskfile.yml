@@ -10,11 +10,7 @@ tasks:
   install:
     - pnpm install
     - task: ecma:config
-  upgrade:
-    - task: setup
-    - pnpm dedupe
-    - pnpm dedupe --check
-    - task: install
+
   check:
     - task: ecma:check
   fix:
@@ -23,16 +19,25 @@ tasks:
     - task: ecma:lib-build
 
   doc:
-    - task: ecma:doc
+    - task: ecma:doc-build
   dev-doc:
     - task: ecma:doc-dev
 
   upgrade:
-    - pnpm up @pistonite/pure mono-dev @types/react
+    - >
+      pnpm up @pistonite/pure mono-dev
+      @types/react i18next react-i18next
+      @fluentui/react-components @fluentui/react-icons
     - pnpm dedupe
     - pnpm dedupe --check
-    - task: setup
+    - task: install
 
-
+  publish:
+    - rm -rf dist
+    - task: install
+    - task: check
+    - task: build
+    - task: doc
+    - pnpm publish --access public
 
 

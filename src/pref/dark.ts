@@ -4,7 +4,7 @@ import { persist } from "@pistonite/pure/memory";
 import { injectStyle } from "self::style";
 
 /**
- * Hook to get the current dark mode state
+ * React hook to get the current dark mode state
  */
 export const useDark = (): boolean => {
     return useSyncExternalStore(addDarkSubscriber, isDark);
@@ -29,7 +29,7 @@ export const prefersDarkMode = (): boolean => {
 
 /** Value for the `color-scheme` CSS property */
 export type ColorScheme = "light" | "dark";
-/** Option for initializing dark mode */
+/** Option for initializing dark mode. See {@link initDark}*/
 export interface DarkOptions {
     /**
      * Initial value for dark mode
@@ -47,15 +47,15 @@ export interface DarkOptions {
      * Defaults to `:root`. If set to empty string, CSS will not be updated
      */
     selector?: string;
-};
+}
 
 /**
- * Init Dark mode wrappers
+ * Initialize the dark mode global state
  *
  * ## Detect user preference
  * User preference is detected with `matchMedia` API, if available.
  * ```typescript
- * import { prefersDarkMode } from "@pistonite/pure/dark";
+ * import { prefersDarkMode } from "@pistonite/celera";
  *
  * console.log(prefersDarkMode());
  * ```
@@ -63,7 +63,7 @@ export interface DarkOptions {
  * ## Global dark mode state
  * `initDark` initializes the dark mode state.
  * ```typescript
- * import { initDark, isDark, setDark, addDarkSubscriber } from "@pistonite/pure/dark";
+ * import { initDark, isDark, setDark, addDarkSubscriber } from "@pistonite/celera";
  *
  * initDark();
  * console.log(isDark());
@@ -72,17 +72,11 @@ export interface DarkOptions {
  * setDark(true); // will trigger the subscriber
  * ```
  *
- * ## Use with React
- * A React hook is provided in the [`pure-react`](https://jsr.io/@pistonite/pure-react/doc/pref) package
- * to get the dark mode state from React components.
- *
- * Use `setDark` to change the dark mode state from React compoenents like you would from anywhere else.
- *
  * ## Persisting to localStorage
  * You can persist the dark mode preference to by passing `persist: true` to `initDark`.
  * This will make `initDark` also load the preference from localStorage.
  * ```typescript
- * import { initDark } from "@pistonite/pure/dark";
+ * import { initDark } from "@pistonite/celera";
  *
  * initDark({ persist: true });
  * ```
@@ -92,7 +86,7 @@ export interface DarkOptions {
  * and scrollbars. By default, `initDark` will handle setting this property for the `:root` selector.
  * You can override this by passing a `selector` option.
  * ```typescript
- * import { initDark } from "@pistonite/pure/dark";
+ * import { initDark } from "@pistonite/celera";
  *
  * // will set `.my-app { color-scheme: dark }`
  * initDark({ selector: ".my-app" });

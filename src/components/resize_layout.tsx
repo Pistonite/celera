@@ -1,7 +1,12 @@
 import { makeStyles, mergeClasses } from "@fluentui/react-components";
 import { Children, useRef, useState, type PropsWithChildren } from "react";
 
-export type ResizeLayoutProps = {
+/**
+ * React component. A flex-box layout of 2 children, with a draggable divider between them.
+ *
+ * @interface
+ */
+export interface ResizeLayoutOwnProps {
     /** If the resize layout should be horizontal or vertical */
     vertical?: boolean;
 
@@ -25,7 +30,13 @@ export type ResizeLayoutProps = {
 
     /** Optimize for touch screen */
     touch?: boolean;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, "ref" | "onMouseUp" | "onMouseLeave">;
+}
+
+/**
+ * See {@link ResizeLayoutOwnProps}
+ */
+export type ResizeLayoutProps = ResizeLayoutOwnProps &
+    Omit<React.HTMLAttributes<HTMLDivElement>, "ref" | "onMouseUp" | "onMouseLeave">;
 
 const useStyles = makeStyles({
     container: { display: "flex" },
@@ -64,20 +75,23 @@ const useStyles = makeStyles({
 });
 
 /**
- * A flex-box layout of 2 children, with a draggable divider between them.
+ * React component. A flex-box layout of 2 children, with a draggable divider between them.
+ * See {@link ResizeLayoutOwnProps}
+ * @class
  */
-export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = ({
-    vertical,
-    valuePercent,
-    setValuePercent,
-    disabled,
-    naturalSize,
-    minWidth,
-    minHeight,
-    touch,
-    children,
-    ...props
-}) => {
+export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inProps) => {
+    const {
+        vertical,
+        valuePercent,
+        setValuePercent,
+        disabled,
+        naturalSize,
+        minWidth,
+        minHeight,
+        touch,
+        children,
+        ...props
+    } = inProps;
     const [firstChild, secondChild] = Children.toArray(children);
 
     const styles = useStyles();

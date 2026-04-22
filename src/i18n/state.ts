@@ -24,7 +24,7 @@ const locale = persist<string>({
 });
 
 /**
- * Hook to get the current locale
+ * React hook to get the current locale
  */
 export const useLocale = (): string => {
     return useSyncExternalStore(addLocaleSubscriber, getLocale);
@@ -214,7 +214,6 @@ export const addLocaleSubscriber = (
 ): (() => void) => {
     return locale.subscribe(fn, notifyImmediately);
 };
-
 
 /** Get the array of supported locales passed to init */
 export const getSupportedLocales = (): readonly string[] => supportedLocales;

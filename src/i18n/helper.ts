@@ -1,4 +1,3 @@
-
 /**
  * Use browser API to guess user's preferred locale
  */

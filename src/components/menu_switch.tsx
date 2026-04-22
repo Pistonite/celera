@@ -21,6 +21,24 @@ const useStyles = makeStyles({
     },
 });
 
+/**
+ * React component. A menu item with a label and a switch
+ *
+ * This is a Wrapper around FUI MenuItem and Switch to display controlled switch menu item
+ * because the FUI MenuItemSwitch cannot be controlled individually from the menu
+ *
+ * For now the label needs to be passed in as children
+ *
+ * ```typescript
+ * <MenuSwitch checked={..}, onChange={..}>
+ *    label
+ * </MenuSwitch>
+ * ```
+ *
+ * See [Fluent UI Docs for Switch](https://storybooks.fluentui.dev/react/?path=/docs/components-switch--docs) and [Fluent UI Docs for MenuItem](https://storybooks.fluentui.dev/react/?path=/docs/components-menu-menu--docs)
+ *
+ * @interface
+ */
 export type MenuSwitchProps = {
     onChange: (
         e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>,
@@ -30,10 +48,9 @@ export type MenuSwitchProps = {
     Omit<MenuItemProps, "onClick" | "onChange" | "children">;
 
 /**
- * Wrapper around FUI MenuItem and Switch to display controlled switch menu item
- * because the FUI MenuItemSwitch cannot be controlled individually from the menu
+ * React component. A menu item with a label adn a switch. See {@link MenuSwitchProps}
  *
- * For now the label needs to be passed in as children
+ * @class
  */
 export const MenuSwitch = forwardRef<HTMLDivElement, PropsWithChildren<MenuSwitchProps>>(
     ({ label: _unused, checked, onChange, children, ...props }, ref) => {

@@ -1,1 +1,1 @@
-export { useSwappedWheelScrollDirection } from "./scroll.ts";
+export * from "./scroll.ts";
