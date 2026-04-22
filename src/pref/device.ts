@@ -13,7 +13,7 @@ import { log } from "self::util";
  * You should make a custom typed export to make sure it's type safe.
  *
  * ```typescript
- * import { useDisplayMode as pureUseDisplayMode } from "@pistonite/pure-react";
+ * import { useDisplayMode as pureUseDisplayMode } from "@pistonite/celera";
  * export const useDisplayMode = pureUseDisplayMode<MyDisplayMode>;
  * ```
  *
@@ -49,11 +49,9 @@ export const isMobile = (): boolean => {
 const displayMode = cell({ initial: "" });
 
 /**
- * Options for display mode detection
- *
- * See {@link initDisplayMode}
+ * Options for display mode detection. See {@link initDisplayMode}
  */
-export type DisplayModeOptions<T extends string> = {
+export interface DisplayModeOptions<T extends string> {
     /**
      * Set the initial value, if the platform doesn't support detecting
      * the display mode. `detect()` will be used instead if supported
@@ -76,14 +74,14 @@ export type DisplayModeOptions<T extends string> = {
  * The display modes are strings that should be passed as a type parameter
  * to {@link initDisplayMode}. You can create an alias in your code for
  * getting the typed version of {@link addDisplayModeSubscriber}, {@link getDisplayMode},
- * and {@link useDisplayMode} from `pure-react`.
+ * and {@link useDisplayMode}
  *
  * ```typescript
  * import {
  *     addDisplayModeSubscriber as pureAddDisplayModeSubscriber,
  *     getDisplayMode as pureGetDisplayMode,
- * } from "@pistonite/pure/pref";
- * import { useDisplayMode as pureUseDisplayMode } from "@pistonite/pure-react";
+ *     useDisplayMode as pureUseDisplayMode,
+ * } from "@pistonite/celera";
  *
  * export const MyDisplayModes = ["mode1", "mode2"] as const;
  * export type MyDisplayMode = (typeof MyDisplayModes)[number];

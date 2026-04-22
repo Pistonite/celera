@@ -72,3 +72,10 @@ export interface LocaleOptions<TLocale extends string> {
      */
     loader: LoadLanguageFn | Record<string, LoadLanguageFn>;
 };
+
+/** 
+ * i18next translator function
+ *
+ * The options contain variables to be interpolated into the translation
+ */
+export type TranslatorFn = (key: string, options?: Record<string, unknown>) => string;

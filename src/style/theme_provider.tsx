@@ -3,7 +3,13 @@ import { FluentProvider, webDarkTheme, webLightTheme } from "@fluentui/react-com
 
 import { useDark } from "self::pref";
 
-export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
+/**
+ * React component to provide Fluent UI theme to the app
+ *
+ * @class
+ */
+export const ThemeProvider: React.FC<PropsWithChildren> = (props) => {
+    const { children } = props;
     const dark = useDark();
     const theme = dark ? webDarkTheme : webLightTheme;
     return <FluentProvider theme={theme}>{children}</FluentProvider>;

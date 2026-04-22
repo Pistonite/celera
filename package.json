@@ -1,6 +1,6 @@
 {
     "name": "@pistonite/celera",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "module",
     "description": "In-house UI framework",
     "homepage": "https://github.com/Pistonite/celera",
@@ -22,7 +22,7 @@
     "devDependencies": {
         "@types/react": "^19.2.14",
         "eslint": "^9",
-        "mono-dev": "link:../mono-dev"
+        "mono-dev": "github:pistonight/mono-dev#main"
     },
     "peerDependencies": {
         "@fluentui/react-components": "^9",
@@ -30,8 +30,8 @@
         "react": "^19"
     },
     "dependencies": {
-        "@pistonite/pure": "^0.29.2",
-        "i18next": "^26.0.3",
-        "react-i18next": "^17.0.2"
+        "@pistonite/pure": "^0.29.4",
+        "i18next": "^26.0.6",
+        "react-i18next": "^17.0.4"
     }
 }

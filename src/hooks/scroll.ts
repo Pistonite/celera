@@ -7,10 +7,10 @@ const MAX_SPEED = 200;
 const ACCELERATION = 6.4;
 
 /**
- * Make it so that by default, mouse wheel scrolls horizontally,
+ * React hoook to make it so that by default, mouse wheel scrolls horizontally,
  * and Shift + mouse wheel scrolls vertically
  *
- * ```example
+ * ```typescript
  * const { ref } = useSwappedWheelScrollDirection();
  *
  * return (<div ref={ref}> ... </div>);

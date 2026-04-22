@@ -24,7 +24,7 @@ const locale = persist<string>({
 });
 
 /**
- * Hook to get the current locale
+ * React hook to get the current locale
  */
 export const useLocale = (): string => {
     return useSyncExternalStore(addLocaleSubscriber, getLocale);
