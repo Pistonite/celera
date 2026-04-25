@@ -20,6 +20,7 @@ export const useTranslation = (
 
 /** Partial options for `useTranslation` from `react-i18next` */
 export interface UseTranslationOptions {
+    /** set to "default" to return empty string if not found */
     nsMode?: "fallback" | "default";
 }
 
