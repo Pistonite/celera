@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { persist } from "@pistonite/pure/memory";
 
-import { injectStyle } from "self::style";
+import { injectStyle } from "#style";
 
 /**
  * React hook to get the current dark mode state

@@ -1,6 +1,6 @@
 import { Button, MenuItem } from "@fluentui/react-components";
 
-import { useDark } from "self::pref";
+import { useDark } from "#pref";
 
 import GithubMark from "../assets/github-mark.svg";
 import GithubMarkWhite from "../assets/github-mark-white.svg";

@@ -3,7 +3,7 @@ import type { BackendModule } from "i18next";
 import { convertToSupportedLocale } from "./state.ts";
 import type { LoadLanguageFn } from "./types.ts";
 
-import { log } from "self::util";
+import { log } from "#util";
 
 /** Create an i18next backend module given the loader functions */
 export const createBackend = (

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 
-import { log } from "self::util";
+import { log } from "#util";
 
 // These are random values I picked that felt good
 const MAX_SPEED = 200;

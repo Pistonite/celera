@@ -9,6 +9,7 @@ import {
     Tooltip,
 } from "@fluentui/react-components";
 import { Globe20Regular } from "@fluentui/react-icons";
+
 import {
     CELERA_NAMESPACE,
     getLocalizedLanguageName,
@@ -16,9 +17,8 @@ import {
     setLocale,
     useLocale,
     useTranslation,
-} from "self::i18n";
-
-import type { CommonProps } from "self::util";
+} from "#i18n";
+import type { CommonProps } from "#util";
 
 /**
  * React component for a language picker button or menu

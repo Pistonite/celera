@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { cell } from "@pistonite/pure/memory";
 
-import { log } from "self::util";
+import { log } from "#util";
 
 /**
  * Hook to get the display mode
