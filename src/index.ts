@@ -10,8 +10,8 @@ export {
     type MenuSwitchProps,
     type ResizeLayoutProps,
     type ResizeLayoutOwnProps,
-} from "self::components";
-export { useSwappedWheelScrollDirection } from "self::hooks";
+} from "#components";
+export { useSwappedWheelScrollDirection } from "#hooks";
 
 export {
     useLocale,
@@ -33,7 +33,7 @@ export {
     type LocaleOptions,
     type LoadLanguageFn,
     type TranslatorFn,
-} from "self::i18n";
+} from "#i18n";
 
 export {
     prefersDarkMode,
@@ -51,9 +51,9 @@ export {
     addDisplayModeSubscriber,
     getDisplayMode,
     type DisplayModeOptions,
-} from "self::pref";
+} from "#pref";
 
-export { gale, GALE_BUILTIN_STYLES, injectStyle, ThemeProvider } from "self::style";
+export { gale, GALE_BUILTIN_STYLES, injectStyle, ThemeProvider } from "#style";
 
-import { log } from "self::util";
+import { log } from "#util";
 export { log as celeraLogger };

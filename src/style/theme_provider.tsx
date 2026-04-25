@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { FluentProvider, webDarkTheme, webLightTheme } from "@fluentui/react-components";
 
-import { useDark } from "self::pref";
+import { useDark } from "#pref";
 
 /**
  * React component to provide Fluent UI theme to the app

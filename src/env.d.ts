@@ -1,3 +1,2 @@
 /// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-/// <reference types="mono-dev/vite-types" />
+/// <reference types="mono-dev/app-types" />

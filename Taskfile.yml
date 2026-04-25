@@ -39,5 +39,3 @@ tasks:
     - task: build
     - task: doc
     - pnpm publish --access public
-
-

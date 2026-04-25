@@ -1,6 +1,6 @@
 import { type GriffelStyle, makeStyles, mergeClasses } from "@fluentui/react-components";
 
-import { log } from "self::util";
+import { log } from "#util";
 
 /**
  * Tailwind-like style engine, but uses `griffel`
