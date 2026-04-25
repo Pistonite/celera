@@ -38,4 +38,4 @@ tasks:
     - task: check
     - task: build
     - task: doc
-    - pnpm publish --access public
+    - task: ecma:publish
