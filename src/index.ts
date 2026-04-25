@@ -33,6 +33,7 @@ export {
     type LocaleOptions,
     type LoadLanguageFn,
     type TranslatorFn,
+    type UseTranslationOptions,
 } from "#i18n";
 
 export {
