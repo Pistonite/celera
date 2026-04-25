@@ -10,10 +10,18 @@ import type { TranslatorFn } from "./types.ts";
  *
  * This wraps `useTranslation` from `react-i18next`.
  */
-export const useTranslation = (namespace?: string): TranslatorFn => {
-    const { t } = useTranslation_(namespace);
+export const useTranslation = (
+    namespace?: string,
+    options?: UseTranslationOptions,
+): TranslatorFn => {
+    const { t } = useTranslation_(namespace, options);
     return t;
 };
+
+/** Partial options for `useTranslation` from `react-i18next` */
+export interface UseTranslationOptions {
+    nsMode?: "fallback" | "default";
+}
 
 /** The i18next instance */
 export const i18next = i18next_;
