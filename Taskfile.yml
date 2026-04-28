@@ -17,6 +17,8 @@ tasks:
     - task: ecma:fix
   build:
     - task: ecma:lib-build
+  test:
+    - task: ecma:test
 
   doc:
     - task: ecma:doc-build

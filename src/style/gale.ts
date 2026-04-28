@@ -188,21 +188,64 @@ export type GaleKeys<T extends string> = T | GaleBuiltinKey;
 /** Hook to be called inside a component to get the `m` function. See {@link gale} */
 export type GaleHook<T extends string> = () => GaleFn<T>;
 /** The `m` function that turns a style string into class names */
-export type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T>) => string;
+export type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T, []>) => string;
 
 /** Type-safe, space-separated style idents */
-export type GaleString<K extends string, T extends string> = K extends T
-    ? K
-    : K extends `${infer U} ${infer N}`
-      ? U extends T
-          ? GaleString<N, T> extends N
-              ? `${U} ${GaleString<N, T>}`
-              : Prettify<GaleString<N, T> & { After: U }>
-          : { InvalidStyleIdent: U }
-      : { InvalidStyleIdent: K };
+export type GaleString<K extends string, T extends string, S extends string[]> = K extends S[number]
+    ? { DuplicateStyleIdent: K }
+    : K extends T
+      ? K
+      : K extends `${infer U} ${infer N}`
+        ? U extends S[number]
+            ? { DuplicateStyleIdent: U }
+            : U extends T
+              ? GaleString<N, T, [...S, U]> extends N
+                  ? `${U} ${GaleString<N, T, [...S, U]>}`
+                  : Prettify<ExtendAfter<GaleString<N, T, [...S, U]>, U>>
+              : { InvalidStyleIdent: U }
+        : { InvalidStyleIdent: K };
+type ExtendAfter<T, U> = T extends { After: string } ? T : T & { After: U };
 type Prettify<T> = {
     [K in keyof T]: T[K];
 } & {};
+
+if (import.meta.vitest) {
+    const { test, expectTypeOf } = import.meta.vitest;
+    type Validate<K extends string> = GaleString<K, "foo" | "bar" | `long-${number}`, []>;
+    test("GaleString", () => {
+        expectTypeOf<Validate<"bar">>().toExtend<string>();
+        expectTypeOf<Validate<"foo">>().toExtend<string>();
+        expectTypeOf<Validate<"biz">>().toEqualTypeOf<{ InvalidStyleIdent: "biz" }>();
+
+        expectTypeOf<Validate<"foo bar">>().toExtend<string>();
+        expectTypeOf<Validate<"foo foo">>().toEqualTypeOf<{
+            DuplicateStyleIdent: "foo";
+            After: "foo";
+        }>();
+        expectTypeOf<Validate<"foo biz">>().toEqualTypeOf<{
+            InvalidStyleIdent: "biz";
+            After: "foo";
+        }>();
+        expectTypeOf<Validate<"biz foo">>().toEqualTypeOf<{ InvalidStyleIdent: "biz" }>();
+        expectTypeOf<Validate<"foo bar biz">>().toEqualTypeOf<{
+            InvalidStyleIdent: "biz";
+            After: "bar";
+        }>();
+        expectTypeOf<Validate<"foo biz biz">>().toEqualTypeOf<{
+            InvalidStyleIdent: "biz";
+            After: "foo";
+        }>();
+        expectTypeOf<Validate<"foo biz bar">>().toEqualTypeOf<{
+            InvalidStyleIdent: "biz";
+            After: "foo";
+        }>();
+        expectTypeOf<Validate<"biz biz bar">>().toEqualTypeOf<{ InvalidStyleIdent: "biz" }>();
+        expectTypeOf<Validate<"biz biz">>().toEqualTypeOf<{ InvalidStyleIdent: "biz" }>();
+        expectTypeOf<
+            Validate<"foo bar long-1 long-2 long-3 long-4 long-5 big long-6 long-7 long-8 long-9">
+        >().toEqualTypeOf<{ InvalidStyleIdent: "big"; After: "long-5" }>();
+    });
+}
 
 /** Built-in styles for {@link gale} */
 export const GALE_BUILTIN_STYLES = {
