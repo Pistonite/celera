@@ -46,9 +46,16 @@ import { log } from "#util";
  *     return <div className={m("wh-100 padding-0")}>my component</div>;
  * };
  *
+ * const useStyles = useStyleEngine.extend({
+ *     container: {
+ *         // not shown
+ *     }
+ * });
+ *
  * export const MyComponent2 = () => {
  *     const m = useStyles(); // component-level style idents
- *     return <div className={m("h-100 my-container")}>my component</div>;
+ *     // note component-level styles are c- prefixed
+ *     return <div className={m("h-100 c-my-container")}>my component</div>;
  * };
  *
  * const useExtraStyles = makeStyles({
@@ -56,13 +63,6 @@ import { log } from "#util";
  *         overflow: "hidden"
  *     }
  * });
- *
- * export const MyComponent3 = () => {
- *     const m = useStyles(); // component-level style idents
- *     // if needed (should be rare), you can interop with hooks from griffel
- *     const c = useExtraStyles();
- *     return <div className={m("h-100 my-container", c.extra)}>my component</div>;
- * };
  * ```
  *
  */
@@ -107,9 +107,12 @@ export const gale = <T extends string>(
     };
     const makeComponentLevelStyleEngine = <K extends string>(
         componentStyles: Record<K, GriffelStyle>,
-    ): GaleHook<K | GaleKeys<T>> => {
-        const useComponentStyles = makeStyles(componentStyles);
-        const useStyles = (): GaleFn<K | GaleKeys<T>> => {
+    ): GaleHook<`c-${K}` | GaleKeys<T>> => {
+        const mappedComponentStyles = Object.fromEntries(
+            Object.entries(componentStyles).map(([k, v]) => ["c-" + k, v]),
+        ) as Record<`c-${K}`, GriffelStyle>;
+        const useComponentStyles = makeStyles(mappedComponentStyles);
+        const useStyles = (): GaleFn<`c-${K}` | GaleKeys<T>> => {
             // griffel makeStyles hook return cached stable reference
             const projectStyles = useProjectLevelGriffelStyles();
             let componentStylesToGaleStringCache = cache.get(projectStyles);
@@ -133,7 +136,7 @@ export const gale = <T extends string>(
                     classes,
                 );
             };
-            return mFunction as GaleFn<K | GaleKeys<T>>;
+            return mFunction as GaleFn<`c-${K}` | GaleKeys<T>>;
         };
         return useStyles;
     };
@@ -178,7 +181,7 @@ export const gale = <T extends string>(
  */
 export interface GaleEngine<T extends string> extends GaleHook<T> {
     /** Extend the styles to get a component-specific hook */
-    extend: <K extends string>(componentStyles: Record<K, GriffelStyle>) => GaleHook<K | T>;
+    extend: <K extends string>(componentStyles: Record<K, GriffelStyle>) => GaleHook<`c-${K}` | T>;
 }
 /** Wrapper to concatenate built-in style keys with project-specific style keys */
 export type GaleKeys<T extends string> = T | GaleBuiltinKey;
