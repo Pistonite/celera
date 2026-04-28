@@ -170,14 +170,25 @@ export const gale = <T extends string>(
     return Object.assign(useStyleEngine, { extend: makeComponentLevelStyleEngine });
 };
 
-type GaleKeys<T extends string> = T | GaleBuiltinKey;
-interface GaleEngine<T extends string> extends GaleHook<T> {
+/**
+ * Engine function created by {@link gale}
+ *
+ * Can either be used as a hook to get the `m` function, or use `.extend()`
+ * to extend the styles for component-specific hook.
+ */
+export interface GaleEngine<T extends string> extends GaleHook<T> {
+    /** Extend the styles to get a component-specific hook */
     extend: <K extends string>(componentStyles: Record<K, GriffelStyle>) => GaleHook<K | T>;
 }
-type GaleHook<T extends string> = () => GaleFn<T>;
-type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T>) => string;
+/** Wrapper to concatenate built-in style keys with project-specific style keys */
+export type GaleKeys<T extends string> = T | GaleBuiltinKey;
+/** Hook to be called inside a component to get the `m` function. See {@link gale} */
+export type GaleHook<T extends string> = () => GaleFn<T>;
+/** The `m` function that turns a style string into class names */
+export type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T>) => string;
 
-type GaleString<K extends string, T extends string> = K extends T
+/** Type-safe, space-separated style idents */
+export type GaleString<K extends string, T extends string> = K extends T
     ? K
     : K extends `${infer U} ${infer N}`
       ? U extends T
