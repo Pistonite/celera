@@ -54,7 +54,17 @@ export {
     type DisplayModeOptions,
 } from "#pref";
 
-export { gale, GALE_BUILTIN_STYLES, injectStyle, ThemeProvider } from "#style";
+export {
+    gale,
+    GALE_BUILTIN_STYLES,
+    injectStyle,
+    ThemeProvider,
+    type GaleEngine,
+    type GaleKeys,
+    type GaleHook,
+    type GaleFn,
+    type GaleString,
+} from "#style";
 
 import { log } from "#util";
 export { log as celeraLogger };
