@@ -19,6 +19,7 @@ jobs:
           ecma-pnpm: true
       - run: pnpm install
       - run: task check
+      - run: task test
       - run: task build
 
   build-docs:
