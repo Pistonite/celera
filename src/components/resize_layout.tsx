@@ -1,6 +1,8 @@
 import { makeStyles, mergeClasses } from "@fluentui/react-components";
 import { Children, useRef, useState, type PropsWithChildren } from "react";
 
+import { isMobile } from "#pref";
+
 /**
  * React component. A flex-box layout of 2 children, with a draggable divider between them.
  *
@@ -28,7 +30,10 @@ export interface ResizeLayoutOwnProps {
     /** Use the natural size instead of valuePercent */
     naturalSize?: boolean;
 
-    /** Optimize for touch screen */
+    /**
+     * Force enable styles for touch screen. Note that by default it is enabled
+     * if the device is mobile
+     */
     touch?: boolean;
 }
 
@@ -88,8 +93,8 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
         naturalSize,
         minWidth,
         minHeight,
-        touch,
         children,
+        touch: propTouch,
         ...props
     } = inProps;
     const [firstChild, secondChild] = Children.toArray(children);
@@ -99,6 +104,8 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
     const firstRef = useRef<HTMLDivElement>(null);
     // [startX, startY, startWidth, startHeight]
     const [resizing, setResizing] = useState<number[] | undefined>(undefined);
+
+    const touch = propTouch || isMobile();
 
     const startResize = (e: React.MouseEvent | React.TouchEvent) => {
         if (disabled || !firstRef.current) {
