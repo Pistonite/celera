@@ -164,6 +164,7 @@ export const gale = <T extends string>(
                 log.error(`${slotName} not found in project or component styles`);
                 continue;
             }
+            parsed.push(className);
         }
 
         const result = mergeClasses(...parsed);

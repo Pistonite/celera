@@ -1,6 +1,6 @@
 {
     "name": "@pistonite/celera",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "type": "module",
     "private": true,
     "description": "In-house UI framework",
@@ -39,9 +39,9 @@
         "react": "^19"
     },
     "dependencies": {
-        "@pistonite/pure": "^0.29.5",
+        "@pistonite/pure": "^0.29.6",
         "i18next": "^26.0.8",
-        "react-i18next": "^17.0.4"
+        "react-i18next": "^17.0.6"
     },
     "imports": {
         "#components": "./src/components/index.ts",
