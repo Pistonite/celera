@@ -95,7 +95,7 @@ export const gale = <T extends string>(
             componentStylesToGaleStringCache.set(STUB_COMPONENT_STYLES_KEY, c);
             galeStringCache = c;
         }
-        const mFunction = (classes: string): string => {
+        const mFunction = (...classes: string[]): string => {
             return computeClassesWithCache(
                 projectStyles,
                 STUB_COMPONENT_STYLES_KEY,
@@ -128,7 +128,7 @@ export const gale = <T extends string>(
                 componentStylesToGaleStringCache.set(componentStyles, c);
                 galeStringCache = c;
             }
-            const mFunction = (classes: string): string => {
+            const mFunction = (...classes: string[]): string => {
                 return computeClassesWithCache(
                     projectStyles,
                     componentStyles,
@@ -144,14 +144,15 @@ export const gale = <T extends string>(
         projectStyles: Record<string, string>,
         componentStyles: Record<string, string>,
         cache: Map<string, string>,
-        classes: string,
+        classes: (string | undefined | null | false)[],
     ): string => {
-        const cached = cache.get(classes);
+        const classesConcatenated = classes.filter(Boolean).join(" ");
+        const cached = cache.get(classesConcatenated);
         if (cached !== undefined) {
             return cached;
         }
         const parsed: string[] = [];
-        for (const p of classes.split(" ")) {
+        for (const p of classesConcatenated.split(" ")) {
             const slotName = p.trim();
             if (!slotName) {
                 continue;
@@ -166,7 +167,7 @@ export const gale = <T extends string>(
         }
 
         const result = mergeClasses(...parsed);
-        cache.set(classes, result);
+        cache.set(classesConcatenated, result);
         return result;
     };
 
@@ -188,7 +189,9 @@ export type GaleKeys<T extends string> = T | GaleBuiltinKey;
 /** Hook to be called inside a component to get the `m` function. See {@link gale} */
 export type GaleHook<T extends string> = () => GaleFn<T>;
 /** The `m` function that turns a style string into class names */
-export type GaleFn<T extends string> = <K extends string>(classes: GaleString<K, T, []>) => string;
+export type GaleFn<T extends string> = <K extends string>(
+    ...classes: (GaleString<K, T, []> | undefined | null | false)[]
+) => string;
 
 /** Type-safe, space-separated style idents */
 export type GaleString<K extends string, T extends string, S extends string[]> = K extends S[number]
@@ -362,14 +365,3 @@ export const GALE_BUILTIN_STYLES = {
 } as const satisfies Record<string, GriffelStyle>;
 
 type GaleBuiltinKey = keyof typeof GALE_BUILTIN_STYLES;
-// // type A = Validate<"margin-0", Keys>;
-// // type B = Validate<"foo", Keys>;
-// // type C = Validate<"foo bar", Keys>;
-// // type D = Validate<"margin-0 padding-0", Keys>;
-// // type E = Validate<"margin-0 0", Keys>;
-// // type F = Validate<"0 padding-0", Keys>;
-//
-// const testFunc = <T extends string>(exp: Validate<T, Keys>): void => {
-// }
-//
-// testFunc("margin-0");
