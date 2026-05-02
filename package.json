@@ -1,6 +1,6 @@
 {
     "name": "@pistonite/celera",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "type": "module",
     "private": true,
     "description": "In-house UI framework",
@@ -10,38 +10,30 @@
     },
     "license": "MIT",
     "author": "Pistonight <pistonknight@outlook.com>",
-    "files": [
-        "dist/**/*",
-        "src/**/*"
-    ],
-    "pistonight/mono-dev": {
-        "lib": true,
-        "publish": true
-    },
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/_dts_/src/index.d.ts"
-        }
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Pistonite/celera.git"
     },
-    "devDependencies": {
-        "@types/react": "^19.2.14",
-        "eslint": "^9",
-        "mono-dev": "github:Pistonight/mono-dev#dist"
+    "dependencies": {
+        "@pistonite/pure": "^0.29.7",
+        "i18next": "^26.0.8",
+        "react-i18next": "^17.0.6"
     },
     "peerDependencies": {
         "@fluentui/react-components": "^9",
         "@fluentui/react-icons": "^2",
         "react": "^19"
     },
-    "dependencies": {
-        "@pistonite/pure": "^0.29.6",
-        "i18next": "^26.0.8",
-        "react-i18next": "^17.0.6"
+    "devDependencies": {
+        "@types/react": "^19.2.14",
+        "eslint": "^9",
+        "mono-dev": "github:Pistonight/mono-dev#dist"
+    },
+    "files": [
+        "src/**/*"
+    ],
+    "exports": {
+        ".": "./src/index.ts"
     },
     "imports": {
         "#components": "./src/components/index.ts",
@@ -50,5 +42,9 @@
         "#pref": "./src/pref/index.ts",
         "#style": "./src/style/index.ts",
         "#util": "./src/util/index.ts"
+    },
+    "pistonight/mono-dev": {
+        "lib": true,
+        "publish": true
     }
 }
