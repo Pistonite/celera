@@ -12,11 +12,33 @@ export interface ResizeLayoutOwnProps {
     /** If the resize layout should be horizontal or vertical */
     vertical?: boolean;
 
-    /** The minimum pixel width of the first child */
+    /**
+     * The minimum pixel width of the first child
+     *
+     * By default, the first child can be collapsed completely (0)
+     */
     minWidth?: number;
 
-    /** The minimum pixel height of the first child */
+    /**
+     * The minimum pixel height of the first child
+     *
+     * By default, the first child can be collapsed completely (0)
+     */
     minHeight?: number;
+
+    /**
+     * The minimum pixel width of the second child
+     *
+     * By default, the second child can be collapsed completely (0)
+     */
+    secondMinWidth?: number;
+
+    /**
+     * The minimum pixel height of the second child
+     *
+     * By default, the second child can be collapsed completely (0)
+     */
+    secondMinHeight?: number;
 
     /** The current percentage size of the first child */
     valuePercent: number;
@@ -71,10 +93,6 @@ const useStyles = makeStyles({
         backgroundColor: "rgba(0, 0, 0, 0.1)",
         zIndex: 10000,
     },
-    // dragHandleVisible: {
-    //     transition: "background-color 0.2s",
-    //     display: "flex",
-    // },
     dragHandleTouchVertical: { height: "20px", width: "100%" },
     dragHandleTouchHorizontal: { width: "20px", height: "100%" },
 });
@@ -93,6 +111,8 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
         naturalSize,
         minWidth,
         minHeight,
+        secondMinWidth,
+        secondMinHeight,
         children,
         touch: propTouch,
         ...props
@@ -146,6 +166,13 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
             setValuePercent((newWidth / containerWidth) * 100);
         }
     };
+    const dragHandleVorHorTouchClass = vertical
+        ? touch
+            ? styles.dragHandleTouchVertical
+            : styles.dragHandleVertical
+        : touch
+          ? styles.dragHandleTouchHorizontal
+          : styles.dragHandleHorizontal;
     return (
         <div
             ref={containerRef}
@@ -183,13 +210,7 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
                         className={mergeClasses(
                             styles.dragHandle,
                             styles.dragHandleFirst,
-                            vertical
-                                ? touch
-                                    ? styles.dragHandleTouchVertical
-                                    : styles.dragHandleVertical
-                                : touch
-                                  ? styles.dragHandleTouchHorizontal
-                                  : styles.dragHandleHorizontal,
+                            dragHandleVorHorTouchClass,
                             resizing && styles.dragHandleResizing,
                         )}
                         onMouseDown={startResize}
@@ -197,19 +218,21 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
                     />
                 )}
             </div>
-            <div className={mergeClasses(styles.childContainer, styles.secondChild)}>
+            <div
+                className={mergeClasses(styles.childContainer, styles.secondChild)}
+                // if min width/height not set to 0, the second child can only be collapsed
+                // to its natural size
+                style={{
+                    minWidth: secondMinWidth || 0,
+                    minHeight: secondMinHeight || 0,
+                }}
+            >
                 {!disabled && (
                     <div
                         className={mergeClasses(
                             styles.dragHandle,
                             styles.dragHandleSecond,
-                            vertical
-                                ? touch
-                                    ? styles.dragHandleTouchVertical
-                                    : styles.dragHandleVertical
-                                : touch
-                                  ? styles.dragHandleTouchHorizontal
-                                  : styles.dragHandleHorizontal,
+                            dragHandleVorHorTouchClass,
                             resizing && styles.dragHandleResizing,
                         )}
                         onMouseDown={startResize}
