@@ -6,6 +6,7 @@ import { syncI18nextToCeleraModule } from "./integration.ts";
 import type { LocaleOptions } from "./types.ts";
 import { createBackend } from "./backend.ts";
 import Strings from "./strings.yaml";
+import { registerTranslationLoader } from "./loaders.ts";
 
 export const CELERA_NAMESPACE = "celerans";
 
@@ -15,6 +16,8 @@ export const CELERA_NAMESPACE = "celerans";
  * This function calls `initLocale` internally, so you don't need to do that yourself.
  */
 export const initLocale = async <TLocale extends string>(options: LocaleOptions<TLocale>) => {
+    registerTranslationLoader(CELERA_NAMESPACE, loadCeleraTranslations);
+
     const defaultLocale = options.default;
     let instance = i18next;
     const syncMode = options.sync || "full";
@@ -43,31 +46,10 @@ export const initLocale = async <TLocale extends string>(options: LocaleOptions<
     instance = instance.use(initReactI18next);
 
     const loader = options.loader;
-    if (typeof loader === "function") {
-        const backend = createBackend(
-            {
-                translation: loader,
-                [CELERA_NAMESPACE]: loadCeleraTranslations,
-            },
-            defaultLocale,
-        );
-        instance = instance.use(backend);
-        await instance.init();
-        return;
-    }
-
-    const backend = createBackend(
-        {
-            ...loader,
-            [CELERA_NAMESPACE]: loadCeleraTranslations,
-        },
-        defaultLocale,
-    );
+    const backend = createBackend(loader, defaultLocale);
     instance = instance.use(backend);
     await instance.init({
-        // make sure the namespaces are registered, so translations work
-        // in contexts without react-i18next
-        ns: Object.keys(loader),
+        ns: [CELERA_NAMESPACE],
     });
 };
 

@@ -1,16 +1,16 @@
 import type { BackendModule } from "i18next";
 
-import { convertToSupportedLocale } from "./state.ts";
-import type { LoadLanguageFn } from "./types.ts";
-
 import { log } from "#util";
+
+import { convertToSupportedLocale } from "./state.ts";
+import { getTranslationLoaderForNamespace } from "./loaders.ts";
+import type { LoadLanguageFn } from "./types.ts";
 
 /** Create an i18next backend module given the loader functions */
 export const createBackend = (
-    loaders: Record<string, LoadLanguageFn>,
+    defaultLoader: LoadLanguageFn | undefined,
     fallbackLocale: string,
 ): BackendModule => {
-    const hasNonDefaultNamespace = Object.keys(loaders).some((x) => x !== "translation");
     const backend: BackendModule = {
         type: "backend",
         init: () => {
@@ -22,14 +22,16 @@ export const createBackend = (
                 return undefined;
             }
             const locale = convertToSupportedLocale(language) || fallbackLocale;
-            const loader = loaders[namespace];
-            if (!loader) {
-                if (namespace !== "translation" || !hasNonDefaultNamespace) {
-                    // only log an error if the namespace is not the default
-                    // if there are non-default namespaces
-                    log.error(`no loader found for namespace ${namespace}`);
+            const isDefaultNamespace = namespace === "translation" || !namespace;
+            let loader: LoadLanguageFn;
+            if (isDefaultNamespace) {
+                if (!defaultLoader) {
+                    log.error("default namespace translation loader is not registered");
+                    return undefined;
                 }
-                return undefined;
+                loader = defaultLoader;
+            } else {
+                loader = await getTranslationLoaderForNamespace(namespace);
             }
             try {
                 const strings = await loader(locale);

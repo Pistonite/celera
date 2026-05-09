@@ -30,6 +30,7 @@ export {
     useTranslation,
     translate,
     initLocale,
+    registerTranslationLoader,
     type LocaleOptions,
     type LoadLanguageFn,
     type TranslatorFn,

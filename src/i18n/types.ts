@@ -64,12 +64,11 @@ export interface LocaleOptions<TLocale extends string> {
     sync?: "full" | "i18next-celera" | "celera-i18next";
 
     /**
-     * The language loader function(s).
+     * The default-namespace language loader.
      *
-     * If a function is provided, it will be called for the "translations" namespace.
-     * Otherwise, you can provide a record of functions for each namespace.
+     * To register loaders for non-default namespace, use {@link registerTranslationLoader}
      */
-    loader: LoadLanguageFn | Record<string, LoadLanguageFn>;
+    loader?: LoadLanguageFn;
 }
 
 /**
