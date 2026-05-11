@@ -7,16 +7,12 @@ import type { LocaleOptions } from "./types.ts";
 import { createBackend } from "./backend.ts";
 import Strings from "./strings.yaml";
 import { registerTranslationLoader } from "./loaders.ts";
+import { once } from "@pistonite/pure/sync";
 
 export const CELERA_NAMESPACE = "celerans";
 
-/**
- * Initialize locale system in Pure and connect it with I18next
- *
- * This function calls `initLocale` internally, so you don't need to do that yourself.
- */
-export const initLocale = async <TLocale extends string>(options: LocaleOptions<TLocale>) => {
-    registerTranslationLoader(CELERA_NAMESPACE, loadCeleraTranslations);
+const initLocaleInternal = async <TLocale extends string>(options: LocaleOptions<TLocale>) => {
+    await registerTranslationLoader(CELERA_NAMESPACE, loadCeleraTranslations);
 
     const defaultLocale = options.default;
     let instance = i18next;
@@ -52,6 +48,11 @@ export const initLocale = async <TLocale extends string>(options: LocaleOptions<
         ns: [CELERA_NAMESPACE],
     });
 };
+/**
+ * Initialize locale system in Celera and connect it with I18next
+ * @function
+ */
+export const initLocale = once({ fn: initLocaleInternal });
 
 const loadCeleraTranslations = async (language: string): Promise<Record<string, string>> => {
     const SupportedLocales = [
