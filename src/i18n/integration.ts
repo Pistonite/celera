@@ -14,7 +14,7 @@ export const useTranslation = (
     namespace?: string,
     options?: UseTranslationOptions,
 ): TranslatorFn => {
-    const { t } = useTranslation_(namespace, options);
+    const { t } = useTranslation_(namespace || "translation", options);
     return t;
 };
 
