@@ -45,7 +45,7 @@ const initLocaleInternal = async <TLocale extends string>(options: LocaleOptions
     const backend = createBackend(loader, defaultLocale);
     instance = instance.use(backend);
     await instance.init({
-        ns: [CELERA_NAMESPACE],
+        ns: ["translation", CELERA_NAMESPACE],
     });
 };
 /**
