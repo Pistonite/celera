@@ -57,6 +57,12 @@ export interface ResizeLayoutOwnProps {
      * if the device is mobile
      */
     touch?: boolean;
+
+    /**
+     * Override the z-index of the resize handles. Use if need to win z-index fights.
+     * Default z-index is 1000
+     */
+    resizeHandleZIndex?: number;
 }
 
 /**
@@ -115,8 +121,10 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
         secondMinHeight,
         children,
         touch: propTouch,
+        resizeHandleZIndex: propResizeHandleZIndex,
         ...props
     } = inProps;
+
     const [firstChild, secondChild] = Children.toArray(children);
 
     const styles = useStyles();
@@ -124,6 +132,7 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
     const firstRef = useRef<HTMLDivElement>(null);
     // [startX, startY, startWidth, startHeight]
     const [resizing, setResizing] = useState<number[] | undefined>(undefined);
+    const resizeHandleZIndex = resizing ? undefined : (propResizeHandleZIndex ?? 1000);
 
     const touch = propTouch || isMobile();
 
@@ -207,6 +216,7 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
                 {firstChild}
                 {!disabled && (
                     <div
+                        style={{ zIndex: resizeHandleZIndex }}
                         className={mergeClasses(
                             styles.dragHandle,
                             styles.dragHandleFirst,
@@ -229,6 +239,7 @@ export const ResizeLayout: React.FC<PropsWithChildren<ResizeLayoutProps>> = (inP
             >
                 {!disabled && (
                     <div
+                        style={{ zIndex: resizeHandleZIndex }}
                         className={mergeClasses(
                             styles.dragHandle,
                             styles.dragHandleSecond,
