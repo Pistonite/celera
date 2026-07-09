@@ -15,8 +15,8 @@ importers:
         specifier: ^2
         version: 2.0.323(react@19.2.5)
       '@pistonite/pure':
-        specifier: ^0.29.7
-        version: 0.29.7
+        specifier: ^0.29.8
+        version: 0.29.8
       i18next:
         specifier: ^26.3.4
         version: 26.3.4(typescript@6.0.3)
@@ -852,8 +852,8 @@ packages:
   '@oxc-project/types@0.138.0':
     resolution: {integrity: sha512-1a7ZKmrRTCoN1XMZ4L0PyyqrMnrNlLyPuOkdSX2MZg7IiIGRUyurNhAm73ptDOraoBcIordsIGKNPKUzy3ZmfA==}
 
-  '@pistonite/pure@0.29.7':
-    resolution: {integrity: sha512-p882Npv1xkOj4oyZtCp+r/+IPGPVKn56+Y6xS43p4iBzJMsti5OChSwA6KwsYr8uX/0s6bD1dUSsTr62/tcMmg==}
+  '@pistonite/pure@0.29.8':
+    resolution: {integrity: sha512-qXBc2PW3P3uqYKh17O2xPViXQDsaCeqUBwwgOfbNlwNWsRmve4XLXbxzM7HnTbj72Bx7Vej16aZloydQwXXflw==}
 
   '@prettier/cli@0.12.0':
     resolution: {integrity: sha512-lba80YY5PW0KYlQDm0oRAYXzbAbdKDceQm+J4UnaJcxp527PMPghQlmqvpwIi4gRCKr70H/dbAkfxBdOSo3h/A==}
@@ -3842,7 +3842,7 @@ snapshots:
 
   '@oxc-project/types@0.138.0': {}
 
-  '@pistonite/pure@0.29.7':
+  '@pistonite/pure@0.29.8':
     dependencies:
       denque: 2.1.0
 
