@@ -136,7 +136,7 @@ importers:
         version: 10.9.1(supports-color@7.2.0)
       mono-dev:
         specifier: github:Pistonight/mono-dev#dist
-        version: https://codeload.github.com/Pistonight/mono-dev/tar.gz/31f87bd271e88a7ef7a738e7771aa4c7ba01a1cf(@babel/runtime@7.29.2)(prettier@3.8.3)(rolldown@1.2.6)(yaml@2.9.0)
+        version: https://codeload.github.com/Pistonight/mono-dev/tar.gz/31c3496ea84156c247826688f7724c3c4bbd936e(@babel/runtime@7.29.2)(prettier@3.8.3)(rolldown@1.2.6)(yaml@2.9.0)
 
 packages:
 
@@ -1900,9 +1900,9 @@ packages:
     resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
     engines: {node: 18 || 20 || >=22}
 
-  mono-dev@https://codeload.github.com/Pistonight/mono-dev/tar.gz/31f87bd271e88a7ef7a738e7771aa4c7ba01a1cf:
-    resolution: {gitHosted: true, integrity: sha512-ik+yjVPXlFTYeigbhfRiOtCkT26x2gA3qCO9r/JdOzOyV85x4Hbfq43VjmQIgv+2Cw8tbCtElfDjFmETM8HpIg==, tarball: https://codeload.github.com/Pistonight/mono-dev/tar.gz/31f87bd271e88a7ef7a738e7771aa4c7ba01a1cf}
-    version: 0.4.32
+  mono-dev@https://codeload.github.com/Pistonight/mono-dev/tar.gz/31c3496ea84156c247826688f7724c3c4bbd936e:
+    resolution: {gitHosted: true, integrity: sha512-Jhi3bxhHaxuW2FMJyUPPSUOSAQ/G2e2rjDYaIggNd7jDKzDbnmML2QWsASTM8uUsDGu93SsuSfr8q1z92v5Osg==, tarball: https://codeload.github.com/Pistonight/mono-dev/tar.gz/31c3496ea84156c247826688f7724c3c4bbd936e}
+    version: 0.4.33
     hasBin: true
 
   ms@2.1.3:
@@ -4852,7 +4852,7 @@ snapshots:
     dependencies:
       brace-expansion: 5.0.9
 
-  mono-dev@https://codeload.github.com/Pistonight/mono-dev/tar.gz/31f87bd271e88a7ef7a738e7771aa4c7ba01a1cf(@babel/runtime@7.29.2)(prettier@3.8.3)(rolldown@1.2.6)(yaml@2.9.0):
+  mono-dev@https://codeload.github.com/Pistonight/mono-dev/tar.gz/31c3496ea84156c247826688f7724c3c4bbd936e(@babel/runtime@7.29.2)(prettier@3.8.3)(rolldown@1.2.6)(yaml@2.9.0):
     dependencies:
       '@babel/core': 8.0.1
       '@eslint/js': 10.0.1(eslint@10.9.1(supports-color@7.2.0))
