@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "@pistonite/pure": "^0.29.9",
-        "i18next": "^26.4.1",
+        "i18next": "^26.4.0",
         "react-i18next": "^17.0.12"
     },
     "peerDependencies": {

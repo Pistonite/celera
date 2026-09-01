@@ -1,3 +1,2 @@
 minimumReleaseAgeExclude:
   - '@pistonite/*'
-  - i18next@26.4.1
