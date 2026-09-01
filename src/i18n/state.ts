@@ -71,7 +71,7 @@ export const initLocaleState = <TLocale extends string>(options: LocaleOptions<T
         });
     }
 
-    let _locale = "";
+    let _locale: string;
     supportedLocales = options.supported;
     if (options.initial) {
         _locale = options.initial;

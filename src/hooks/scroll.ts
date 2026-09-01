@@ -187,7 +187,7 @@ const computeScroll = (
         log.warn(`scrolling took too long! (${elapsed}ms)`);
         return [currentTarget, 0, false /* done */];
     }
-    let next = currentValue;
+    let next: number;
     let nextSpeed = currentSpeed;
     const currentSpeedPlus = currentSpeed + ACCELERATION;
     const nTicks = Math.ceil(currentSpeedPlus / ACCELERATION);

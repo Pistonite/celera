@@ -9,8 +9,6 @@ includes:
 tasks:
   install:
     - pnpm install
-    - task: ecma:config
-
   check:
     - task: ecma:check
   fix:
