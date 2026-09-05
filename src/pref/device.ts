@@ -31,7 +31,7 @@ export const isMobile = (): boolean => {
     // a few platforms
     if (cachedIsMobile === undefined) {
         const ua = navigator?.userAgent || "";
-        if (ua.match(/(Windows NT|Macintosh|)/i)) {
+        if (ua.match(/(Windows NT|Macintosh)/i)) {
             cachedIsMobile = false;
         } else if (ua.match(/(Mobil|iPhone|Android|iPod|iPad)/)) {
             cachedIsMobile = true;
